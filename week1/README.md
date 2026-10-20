@@ -118,6 +118,271 @@ docker volume prune
 docker run -d --name my-container -v app-data:/app/data nginx
 ```
 
+## 🐧 Linux Process & Log Management
+
+Along with Docker and Git, I also practiced some important **Linux commands used for process monitoring, troubleshooting, and log analysis**.
+
+### 🔎 `ps` – Process Status
+
+The `ps` command stands for **Process Status** and is used to display information about running processes.
+
+```bash
+ps
+```
+
+To view processes from all users in a detailed format:
+
+```bash
+ps aux
+```
+
+### 🔍 `ps auxf`
+
+I also learned:
+
+```bash
+ps auxf
+```
+
+This command displays detailed information about running processes and shows the **parent-child relationship between processes** in a tree-like format.
+
+The flags mean:
+
+- `a` → Show processes associated with all users/terminals.
+- `u` → Display processes in a user-oriented format with information such as CPU and memory usage.
+- `x` → Include processes that do not have a controlling terminal, such as background services.
+- `f` → Display processes in a **forest/tree format**, showing parent-child relationships.
+
+Example:
+
+```text
+systemd
+ ├── sshd
+ │    └── bash
+ │         └── node
+ └── docker
+      └── containerd
+```
+
+This is useful when troubleshooting which process started another process.
+
+### 📌 Useful `ps` Commands
+
+Check all running processes:
+
+```bash
+ps aux
+```
+
+Show processes in tree format:
+
+```bash
+ps auxf
+```
+
+Find a specific process:
+
+```bash
+ps aux | grep nginx
+```
+
+Display information about a specific PID:
+
+```bash
+ps -p 1234 -f
+```
+
+Sort processes by CPU usage:
+
+```bash
+ps aux --sort=-%cpu
+```
+
+Sort processes by memory usage:
+
+```bash
+ps aux --sort=-%mem
+```
+
+Show the process tree:
+
+```bash
+pstree
+```
+
+### 🧯 `fuser` – Find Which Process Is Using a Resource
+
+I learned that `fuser` is useful for finding **which process is using a particular file, directory, filesystem, or network port**.
+
+In simple terms:
+
+> **`fuser` answers: "Which process is using this?"**
+
+For example, to find which process is using port `3000`:
+
+```bash
+fuser 3000/tcp
+```
+
+For more detailed information:
+
+```bash
+fuser -v 3000/tcp
+```
+
+Example:
+
+```text
+                     USER       PID ACCESS COMMAND
+3000/tcp:            vinit     1234 F....  node
+```
+
+Here, `1234` is the **PID** of the process using port `3000`.
+
+I can then investigate the process with:
+
+```bash
+ps -p 1234 -f
+```
+
+A useful troubleshooting flow is:
+
+```text
+Port 3000
+    ↓
+fuser -v 3000/tcp
+    ↓
+Find PID
+    ↓
+ps -p <PID> -f
+    ↓
+Identify the process
+```
+
+I also learned that:
+
+```bash
+fuser -k 3000/tcp
+```
+
+can terminate processes using port `3000`, but this should be used carefully, especially on production systems.
+
+### 📜 `tail` – View the End of a File
+
+The `tail` command displays the **last lines of a file**.
+
+For example:
+
+```bash
+tail app.log
+```
+
+By default, it displays the last **10 lines**.
+
+To display the last 20 lines:
+
+```bash
+tail -n 20 app.log
+```
+
+### 👀 `tail -f` – Follow a Log File
+
+The `-f` flag means **follow**.
+
+```bash
+tail -f app.log
+```
+
+It displays the end of the file and **continues watching it for new lines**.
+
+For example, if a server is writing new logs:
+
+```text
+Server started
+User connected
+Request received
+```
+
+and a new request occurs, the new log entry appears automatically in the terminal.
+
+This is extremely useful for **real-time log monitoring**.
+
+For example:
+
+```bash
+tail -f /var/log/syslog
+```
+
+or:
+
+```bash
+docker compose logs -f
+```
+
+### 📌 Useful `tail` Commands
+
+Show the last 10 lines:
+
+```bash
+tail app.log
+```
+
+Show the last 50 lines:
+
+```bash
+tail -n 50 app.log
+```
+
+Follow the log continuously:
+
+```bash
+tail -f app.log
+```
+
+Show the last 100 lines and continue following:
+
+```bash
+tail -n 100 -f app.log
+```
+
+Stop `tail -f`:
+
+```text
+Ctrl + C
+```
+
+### 🧠 Linux Troubleshooting Learning
+
+These commands helped me understand some of the basic Linux troubleshooting workflow:
+
+```text
+Application/Service
+       ↓
+Check process
+       ↓
+ps / ps auxf
+       ↓
+Check port
+       ↓
+fuser
+       ↓
+Check logs
+       ↓
+tail / tail -f
+```
+
+These commands are useful when investigating problems such as:
+
+- Application not starting
+- Port already in use
+- High CPU usage
+- High memory usage
+- Background processes
+- Service failures
+- Real-time application logs
+- logs are generating continously
+
+
 ### 🔀 Git & GitHub
 
 Along with Docker, I also learned how to manage my DevOps project using **Git and GitHub**.
@@ -222,9 +487,151 @@ Through this process, I learned how Git tracks files, branches, commits, remotes
 - Pushing a local repository to GitHub
 - Managing the relationship between a local Git repository and a GitHub repository
 
+
+## ☁️ AWS VPC – Cloud Networking
+
+I also started learning **AWS VPC (Virtual Private Cloud)** and understood how networking works inside AWS.
+
+### 🌐 AWS VPC
+
+I learned that a **VPC is an isolated virtual network in AWS** where I can launch resources such as EC2 instances.
+
+I learned about:
+
+- VPC and CIDR blocks
+- Public and Private Subnets
+- Route Tables
+- Local Routes
+- Internet Gateway (IGW)
+- NAT Gateway
+- Elastic IP
+- Security Groups
+- Network ACLs
+- VPC Endpoints
+- IAM Roles and Permissions
+
+### 📡 Public and Private Subnets
+
+I learned that a **public subnet** has a route to an Internet Gateway, while a **private subnet** does not have a direct route to the Internet Gateway.
+
+For example:
+
+```text
+VPC: 10.0.0.0/16
+        │
+        ├── Public Subnet: 10.0.1.0/24
+        │       └── Public EC2
+        │
+        └── Private Subnet: 10.0.2.0/24
+                └── Private EC2
+```
+
+I also learned that a public and private EC2 instance in the same VPC can communicate using the **local route** without requiring a NAT Gateway.
+
+### 🛣️ Route Tables
+
+I learned how route tables decide where network traffic should go.
+
+For example:
+
+```text
+Destination       Target
+10.0.0.0/16       local
+0.0.0.0/0         Internet Gateway
+```
+
+The `local` route is used for communication inside the VPC.
+
+The `0.0.0.0/0` route is the **default route** and is used when the destination does not match a more specific route.
+
+I also learned that `0.0.0.0/0` does **not** mean that everyone can access a resource. It represents a destination range for routing, while access is controlled separately using security mechanisms such as Security Groups and NACLs.
+
+### 🌍 Internet Gateway and NAT Gateway
+
+I learned that an **Internet Gateway (IGW)** provides internet connectivity for resources in a public subnet.
+
+A **NAT Gateway** allows resources in a private subnet to make outbound connections to the internet without giving those resources public IP addresses.
+
+```text
+Private EC2
+     ↓
+NAT Gateway
+     ↓
+Internet Gateway
+     ↓
+Internet
+```
+
+I also learned that a NAT Gateway is normally placed in a **public subnet** and uses an Elastic IP.
+
+### 🔐 Security Groups and NACLs
+
+I learned that:
+
+- **Security Group** controls traffic at the resource/instance level.
+- **Network ACL** controls traffic at the subnet level.
+
+For example, a private EC2 can allow SSH traffic from a public EC2 by allowing the required port in its Security Group.
+
+### 🔗 VPC Endpoint
+
+I learned that a **VPC Endpoint provides private connectivity between resources in a VPC and supported AWS services**.
+
+For example:
+
+```text
+Private EC2
+     ↓
+VPC Endpoint
+     ↓
+S3
+```
+
+I also understood the difference between an **IAM Role** and a **VPC Endpoint**:
+
+- **IAM Role → Provides permission**
+- **VPC Endpoint → Provides private network connectivity**
+
+Even when using a VPC Endpoint, appropriate IAM permissions are still required.
+
+### 🔢 AWS Subnet IP Addresses
+
+I learned that AWS reserves **5 IP addresses in every subnet**.
+
+For example, a `/24` subnet contains:
+
+```text
+2^(32-24) = 256 total IP addresses
+
+256 - 5 = 251 usable IP addresses
+```
+
+Therefore, a `/24` AWS subnet provides **251 usable IPv4 addresses**.
+
+### 🔄 Loopback IP
+
+I also learned about the **loopback IP address**.
+
+The most commonly used IPv4 loopback address is:
+
+```text
+127.0.0.1
+```
+
+It refers to the **same machine** and is also commonly called `localhost`.
+
+### 📚 Notes for VPC
+
+For detailed VPC concepts and the related Terraform code, refer to the [`/notes`](./notes) folder.
+
+
 ### 🧠 Key Learning
 
 By the end of Tuesday, I understood how **Docker Images, Containers, Networks, Volumes, and Docker Compose work together** to run a multi-container application.
 
 ---
+
+
+
+
 
