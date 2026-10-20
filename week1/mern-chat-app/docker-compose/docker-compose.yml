@@ -1,0 +1,47 @@
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: vinitparmar03/mern-chat-app-backend:01
+    container_name: backend
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/health/live"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    env_file:
+      - ../backend/.env
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    image: vinitparmar03/mern-chat-app-frontend:01
+    container_name: frontend
+    ports:
+      - "80:80"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
