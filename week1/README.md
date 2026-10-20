@@ -118,6 +118,110 @@ docker volume prune
 docker run -d --name my-container -v app-data:/app/data nginx
 ```
 
+### 🔀 Git & GitHub
+
+Along with Docker, I also learned how to manage my DevOps project using **Git and GitHub**.
+
+While adding the Chat Web Application to my main `devops_journey` repository, I learned about **nested Git repositories** and how Git can track a repository inside another repository.
+
+I also learned how to convert a nested Git repository into a normal directory tracked by the parent repository.
+
+#### 📌 Commands I Learned
+
+**Check the current repository status:**
+
+```bash
+git status
+```
+
+Shows the current branch, staged changes, unstaged changes, and untracked files.
+
+**Check the current branch:**
+
+```bash
+git branch
+```
+
+Displays the local branches and shows the currently active branch.
+
+**Rename the current branch:**
+
+```bash
+git branch -M master
+```
+
+Renames the current branch to `master`.
+
+**Remove a nested repository from the parent repository's Git index:**
+
+```bash
+git rm --cached week1/mern-chat-app
+```
+
+The `--cached` option removes `week1/mern-chat-app` from Git's index **without deleting the actual files from the working directory**.
+
+This was useful because `mern-chat-app` was previously being treated as a separate Git repository inside my main `devops_journey` repository.
+
+**Remove the nested repository's Git metadata:**
+
+```bash
+rm -rf week1/mern-chat-app/.git
+```
+
+This removes the `.git` directory inside `mern-chat-app`, converting it from an independent Git repository into a normal project directory.
+
+> ⚠️ This command should only be used when you intentionally want to remove the nested repository's Git history/configuration.
+
+**Add the project files to the staging area:**
+
+```bash
+git add .
+```
+
+Stages the changes so they can be included in the next commit.
+
+**Create a commit:**
+
+```bash
+git commit -m "Add Chat App Docker setup"
+```
+
+Creates a snapshot of the staged changes with a descriptive commit message.
+
+**Check which files are tracked by Git:**
+
+```bash
+git ls-files week1/mern-chat-app
+```
+
+Displays the files from `mern-chat-app` that are currently tracked by the parent Git repository.
+
+**Push changes to GitHub:**
+
+```bash
+git push -u origin master
+```
+
+Uploads the local `master` branch to the `origin` remote repository on GitHub.
+
+Here:
+
+- `git push` → Upload local commits to a remote repository.
+- `-u` → Sets the upstream branch for future pushes and pulls.
+- `origin` → Name of the GitHub remote repository.
+- `master` → Branch being pushed.
+
+### 🧠 Git Learning
+
+Through this process, I learned how Git tracks files, branches, commits, remotes, and nested repositories. I also learned how to troubleshoot issues such as:
+
+- `src refspec master does not match any`
+- Nested Git repositories
+- Git repository ownership/safety
+- Staging and committing changes
+- Pushing a local repository to GitHub
+- Managing the relationship between a local Git repository and a GitHub repository
+
 ### 🧠 Key Learning
 
 By the end of Tuesday, I understood how **Docker Images, Containers, Networks, Volumes, and Docker Compose work together** to run a multi-container application.
