@@ -1,0 +1,14 @@
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: vinitparmar03/mern-chat-app-backend:03
+    
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    image: vinitparmar03/mern-chat-app-frontend:04
+

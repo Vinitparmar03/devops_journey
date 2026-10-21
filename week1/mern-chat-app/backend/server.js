@@ -9,6 +9,7 @@ import userRoutes from "./routes/user.routes.js";
 
 import connectToMongoDB from "./db/connectToMongoDB.js";
 import { app, server } from "./socket/socket.js";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -37,11 +38,11 @@ app.get("/health/ready", async (req, res) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, "/frontend/dist")));
+// app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
-app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
-});
+// app.get("*", (req, res) => {
+// 	res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"));
+// });
 
 server.listen(PORT, () => {
 	connectToMongoDB();

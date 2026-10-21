@@ -1,0 +1,66 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = 'my-docker-image'
+        IMAGE_TAG = 'latest'
+    }
+
+    stages {
+        stage('checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('build') {
+            steps {
+                sh 'npm install'
+                sh 'npm run build'
+            }
+        }
+
+        stage('test') {
+            steps {
+                sh 'npm test'
+            }
+        }
+
+        stage('docker build') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+            }
+        }
+
+        stage('deploy') {
+            steps {
+                sh "kubectl set image deployment/my-deployment deployment=${IMAGE_NAME}:${IMAGE_TAG}"
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Please check the logs.'
+        }
+        always {
+            echo 'pipeline finished. Cleaning up...'
+        }
+    }
+}
+
+
+// Explain this pipeline in interview
+
+// You can say:
+// I have a five-stage Jenkins pipeline. 
+// First, I checkout the source code from Git. 
+// Second, I install dependencies and build the application. 
+// Third, I run tests. 
+// Fourth, I build the Docker image and push it to Docker Hub. 
+// Finally, I deploy the new image to Kubernetes. 
+// I also use post actions to handle successful and failed pipeline executions.
